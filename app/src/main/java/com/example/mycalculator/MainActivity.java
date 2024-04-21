@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private double calculate(String expression) {
+  private double calculate(String expression) {
         // Checking for invalid sequences
         if (expression.contains(" ") || expression.contains("++") || expression.contains("--") || expression.contains("+-") ||
                 expression.contains("**") || expression.contains("//") || expression.contains("+/")
@@ -122,25 +122,21 @@ public class MainActivity extends AppCompatActivity {
                 expression.contains("..") || expression.contains("-.") || expression.contains(".+")
                 || expression.contains(".-") || expression.contains("+.") || expression.contains("*.") || expression.contains(".*")
                 || expression.contains("/.") || expression.contains("./")) {
-                           throw new IllegalArgumentException("Invalid expression");
+            throw new IllegalArgumentException("Invalid expression");
         }
         //stacks for numbers and operators
         Stack<Double> numStack = new Stack<>();
         Stack<Character> opStack = new Stack<>();
         int numStart = -1;
-        boolean point = false; //checking decimal point occurrence
         for (int i = 0; i < expression.length(); i++) {
             char c = expression.charAt(i);
-            // If current character is a digit
+            // If current character is a digit or a decimal point
             if (Character.isDigit(c) || c == '.') {
-                if (c == '.') {
-                    if (point) {
-                        throw new IllegalArgumentException("Invalid number with multiple decimal points");
-                    } else {
-                        point = true;
-                    }
-                }}
-                else {
+                if (numStart == -1) numStart = i;
+                if (i == expression.length() - 1) {
+                    numStack.push(Double.parseDouble(expression.substring(numStart)));
+                }
+            } else {
                 // If current character is an operator
                 if (numStart != -1) {
                     numStack.push(Double.parseDouble(expression.substring(numStart, i)));
@@ -152,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
                 opStack.push(c);
             }
         }
+
         // Perform remaining operations
         while (!opStack.isEmpty()) {
             processOp(numStack, opStack);
